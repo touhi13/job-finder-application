@@ -11,10 +11,10 @@ export default function JobsList() {
     const { jobs, searchText, sortBy, isLoading, isError } = useSelector(
         (state) => state.jobs
     );
-    console.log(sortBy)
+
     useEffect(() => {
-        dispatch(fetchJobs(searchText))
-    }, [dispatch, searchText]);
+        dispatch(fetchJobs())
+    }, [dispatch]);
 
     let content = null;
 
@@ -34,10 +34,13 @@ export default function JobsList() {
                 break;
             default:
                 // if sortBy is undefined or has an invalid value, sort by id (default sorting)
-                sortedJobs.sort((a, b) =>  b.id - a.id);
+                sortedJobs.sort((a, b) => b.id - a.id);
         }
         content = sortedJobs
-            .filter((job) => filterType === undefined || job.type.replace(/\s+/g, '').toLowerCase().replace(/\s+/g, '').toLowerCase() === filterType)
+            .filter((job) =>
+                (filterType === undefined || job.type.replace(/\s+/g, '').toLowerCase().replace(/\s+/g, '').toLowerCase() === filterType)
+                && (searchText === '' || job.title.toLowerCase().includes(searchText.toLowerCase()))
+            )
             .map((job) => <JobItem key={job.id} job={job} />);
     }
 
